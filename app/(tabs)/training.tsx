@@ -203,7 +203,7 @@ export default function TrainingScreen() {
                 <View key={workout.id} style={styles.workoutItem}>
                   <View style={styles.workoutHeader}>
                     <View style={styles.workoutInfo}>
-                      <Text style={styles.workoutName}>{workout.name}</Text>
+                      <Text style={styles.mobileWorkoutName}>{workout.name}</Text>
                       <View style={styles.workoutMeta}>
                         <Badge text={typeLabels[workout.type]} variant={typeColors[workout.type] as any} />
                         {workout.distance && <Text style={styles.workoutDistance}>{workout.distance} km</Text>}
@@ -258,7 +258,7 @@ export default function TrainingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   scrollWeb: {
     flex: 1,
     backgroundColor: '#f8fafc',
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
   workoutInfo: {
     flex: 1,
   },
-  workoutName: {
+  mobileWorkoutName: {
     fontSize: 15,
     fontWeight: '600',
     color: '#1a1a1a',

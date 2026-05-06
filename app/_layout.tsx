@@ -10,7 +10,18 @@ const navItems = [
   { name: 'team', label: 'Equipo', icon: '👥' },
   { name: 'training', label: 'Entrenos', icon: '🏃' },
   { name: 'profile', label: 'Perfil', icon: '👤' },
-];
+] as const;
+
+type TabName = (typeof navItems)[number]['name'];
+
+const tabRoutes: Record<TabName, '/(tabs)' | '/(tabs)/team' | '/(tabs)/training' | '/(tabs)/profile'> = {
+  index: '/(tabs)',
+  team: '/(tabs)/team',
+  training: '/(tabs)/training',
+  profile: '/(tabs)/profile',
+};
+
+const getTabRoute = (name: TabName) => tabRoutes[name];
 
 const titles: Record<string, string> = {
   index: 'Dashboard',
@@ -58,7 +69,7 @@ export function WebShell({ children }: { children: React.ReactNode }) {
             <TouchableOpacity
               key={item.name}
               style={[styles.navItem, isActive(item.name) && styles.navItemActive]}
-              onPress={() => router.push(`/(tabs)/${item.name}`)}
+              onPress={() => router.push(getTabRoute(item.name))}
             >
               <Text style={styles.navIcon}>{item.icon}</Text>
               {!sidebarCollapsed && (
@@ -118,7 +129,7 @@ export function MobileShell({ children }: { children: React.ReactNode }) {
           <TouchableOpacity
             key={item.name}
             style={styles.mobileTab}
-            onPress={() => router.push(`/(tabs)/${item.name}`)}
+            onPress={() => router.push(getTabRoute(item.name))}
           >
             <Text style={[styles.mobileTabIcon, isActive(item.name) && styles.mobileTabIconActive]}>
               {item.icon}

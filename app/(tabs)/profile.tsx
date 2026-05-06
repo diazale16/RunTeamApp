@@ -193,19 +193,19 @@ export default function ProfileScreen() {
             <View style={styles.statsGrid}>
               <View style={styles.statBox}>
                 <Text style={styles.statValue}>156</Text>
-                <Text style={styles.statLabel}>km Totales</Text>
+                <Text style={styles.mobileStatLabel}>km Totales</Text>
               </View>
               <View style={styles.statBox}>
                 <Text style={styles.statValue}>24</Text>
-                <Text style={styles.statLabel}>Entrenamientos</Text>
+                <Text style={styles.mobileStatLabel}>Entrenamientos</Text>
               </View>
               <View style={styles.statBox}>
                 <Text style={styles.statValue}>5:15</Text>
-                <Text style={styles.statLabel}>Ritmo Prom.</Text>
+                <Text style={styles.mobileStatLabel}>Ritmo Prom.</Text>
               </View>
               <View style={styles.statBox}>
                 <Text style={styles.statValue}>12</Text>
-                <Text style={styles.statLabel}>Días Activo</Text>
+                <Text style={styles.mobileStatLabel}>Días Activo</Text>
               </View>
             </View>
           </Card>
@@ -222,10 +222,10 @@ export default function ProfileScreen() {
                 <View key={achievement.id} style={styles.achievementRow}>
                   <Text style={styles.achievementIcon}>{achievement.icon}</Text>
                   <View style={styles.achievementInfo}>
-                    <Text style={styles.achievementName}>{achievement.name}</Text>
-                    <Text style={styles.achievementDesc}>{achievement.description}</Text>
+                    <Text style={styles.mobileAchievementName}>{achievement.name}</Text>
+                    <Text style={styles.mobileAchievementDesc}>{achievement.description}</Text>
                   </View>
-                  {achievement.unlockedAt && <Text style={styles.achievementDate}>{achievement.unlockedAt}</Text>}
+                  {achievement.unlockedAt && <Text style={styles.mobileAchievementDate}>{achievement.unlockedAt}</Text>}
                 </View>
               ))}
             </View>
@@ -237,8 +237,8 @@ export default function ProfileScreen() {
                 <View key={achievement.id} style={styles.achievementRowLocked}>
                   <Text style={styles.achievementIcon}>🔒</Text>
                   <View style={styles.achievementInfo}>
-                    <Text style={styles.achievementNameLocked}>{achievement.name}</Text>
-                    <Text style={styles.achievementDesc}>{achievement.description}</Text>
+                    <Text style={styles.mobileAchievementNameLocked}>{achievement.name}</Text>
+                    <Text style={styles.mobileAchievementDesc}>{achievement.description}</Text>
                   </View>
                 </View>
               ))}
@@ -291,7 +291,7 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   scrollWeb: {
     flex: 1,
     backgroundColor: '#f8fafc',
@@ -653,7 +653,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-  statLabel: {
+  mobileStatLabel: {
     fontSize: 12,
     color: '#666',
     marginTop: 4,
@@ -679,22 +679,22 @@ const styles = StyleSheet.create({
   achievementInfo: {
     flex: 1,
   },
-  achievementName: {
+  mobileAchievementName: {
     fontSize: 15,
     fontWeight: '600',
     color: '#1a1a1a',
   },
-  achievementNameLocked: {
+  mobileAchievementNameLocked: {
     fontSize: 15,
     fontWeight: '600',
     color: '#999',
   },
-  achievementDesc: {
+  mobileAchievementDesc: {
     fontSize: 13,
     color: '#666',
     marginTop: 2,
   },
-  achievementDate: {
+  mobileAchievementDate: {
     fontSize: 12,
     color: '#999',
   },

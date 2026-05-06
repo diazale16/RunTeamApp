@@ -3,6 +3,7 @@ import { useRouter, Stack } from 'expo-router';
 import { useState } from 'react';
 import { ScreenContainer, Card, Button } from '../components';
 import { isWeb } from '../utils/platform';
+import { MobileOnlyRoute } from '../components/PlatformGate';
 
 export default function ActivityScreen() {
   const router = useRouter();
@@ -30,67 +31,69 @@ export default function ActivityScreen() {
   };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: 'Registrar Actividad',
-          presentation: 'modal',
-        }}
-      />
-      <ScreenContainer>
-        <View style={styles.container}>
-          <Card title="¿Cómo quieres registrar tu actividad?">
-            <View style={styles.optionsContainer}>
-              <View style={styles.optionCard}>
-                <Text style={styles.optionIcon}>🏃</Text>
-                <Text style={styles.optionTitle}>GPS en Vivo</Text>
-                <Text style={styles.optionDescription}>
-                  Registra tu ruta en tiempo real usando el GPS del celular
-                </Text>
-                <Button
-                  title="Iniciar con GPS"
-                  onPress={handleStartRecording}
-                  variant="primary"
-                />
-              </View>
+    <MobileOnlyRoute>
+      <>
+        <Stack.Screen
+          options={{
+            title: 'Registrar Actividad',
+            presentation: 'modal',
+          }}
+        />
+        <ScreenContainer>
+          <View style={styles.container}>
+            <Card title="¿Cómo quieres registrar tu actividad?">
+              <View style={styles.optionsContainer}>
+                <View style={styles.optionCard}>
+                  <Text style={styles.optionIcon}>🏃</Text>
+                  <Text style={styles.optionTitle}>GPS en Vivo</Text>
+                  <Text style={styles.optionDescription}>
+                    Registra tu ruta en tiempo real usando el GPS del celular
+                  </Text>
+                  <Button
+                    title="Iniciar con GPS"
+                    onPress={handleStartRecording}
+                    variant="primary"
+                  />
+                </View>
 
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>O</Text>
-                <View style={styles.dividerLine} />
-              </View>
+                <View style={styles.divider}>
+                  <View style={styles.dividerLine} />
+                  <Text style={styles.dividerText}>O</Text>
+                  <View style={styles.dividerLine} />
+                </View>
 
-              <View style={styles.optionCard}>
-                <Text style={styles.optionIcon}>📝</Text>
-                <Text style={styles.optionTitle}>Manual</Text>
-                <Text style={styles.optionDescription}>
-                  Ingresa los datos de tu entrenamiento manualmente
-                </Text>
-                <Button
-                  title="Ingresar Manualmente"
-                  onPress={handleManualEntry}
-                  variant="secondary"
-                />
+                <View style={styles.optionCard}>
+                  <Text style={styles.optionIcon}>📝</Text>
+                  <Text style={styles.optionTitle}>Manual</Text>
+                  <Text style={styles.optionDescription}>
+                    Ingresa los datos de tu entrenamiento manualmente
+                  </Text>
+                  <Button
+                    title="Ingresar Manualmente"
+                    onPress={handleManualEntry}
+                    variant="secondary"
+                  />
+                </View>
               </View>
+            </Card>
+
+            <Card title="Entrenamientos Recientes">
+              <Text style={styles.recentText}>
+                Tus últimos entrenamientos aparecerán aquí
+              </Text>
+            </Card>
+
+            <View style={styles.infoBox}>
+              <Text style={styles.infoIcon}>💡</Text>
+              <Text style={styles.infoText}>
+                Durante el registro con GPS, tu ubicación se trackeará continuamente 
+                para mostrar tu ruta en el mapa al finalizar.
+              </Text>
             </View>
-          </Card>
-
-          <Card title="Entrenamientos Recientes">
-            <Text style={styles.recentText}>
-              Tus últimos entrenamientos aparecerán aquí
-            </Text>
-          </Card>
-
-          <View style={styles.infoBox}>
-            <Text style={styles.infoIcon}>💡</Text>
-            <Text style={styles.infoText}>
-              Durante el registro con GPS, tu ubicación se trackeará continuamente 
-              para mostrar tu ruta en el mapa al finalizar.
-            </Text>
           </View>
-        </View>
-      </ScreenContainer>
-    </>
+        </ScreenContainer>
+      </>
+    </MobileOnlyRoute>
   );
 }
 

@@ -3,6 +3,7 @@ import { useRouter, Stack } from 'expo-router';
 import { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 import { ScreenContainer, Card, Button } from '../components';
+import { MobileOnlyRoute } from '../components/PlatformGate';
 
 interface LocationData {
   latitude: number;
@@ -141,129 +142,131 @@ export default function LocationTrackerScreen() {
   };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: 'Seguimiento GPS',
-          presentation: 'fullScreenModal',
-          headerShown: true,
-        }}
-      />
-      <View style={styles.container}>
-        <View style={styles.statsContainer}>
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Tiempo</Text>
-            <Text style={styles.statValue}>{formatTime(elapsedTime)}</Text>
+    <MobileOnlyRoute>
+      <>
+        <Stack.Screen
+          options={{
+            title: 'Seguimiento GPS',
+            presentation: 'fullScreenModal',
+            headerShown: true,
+          }}
+        />
+        <View style={styles.container}>
+          <View style={styles.statsContainer}>
+            <View style={styles.statBox}>
+              <Text style={styles.statLabel}>Tiempo</Text>
+              <Text style={styles.statValue}>{formatTime(elapsedTime)}</Text>
+            </View>
+            <View style={styles.statBox}>
+              <Text style={styles.statLabel}>Distancia</Text>
+              <Text style={styles.statValue}>{formatDistance(distance)}</Text>
+            </View>
+            <View style={styles.statBox}>
+              <Text style={styles.statLabel}>Ritmo</Text>
+              <Text style={styles.statValue}>
+                {distance > 0 ? `${(elapsedTime / 60 / distance).toFixed(2)}` : '--'}
+                <Text style={styles.statUnit}> min/km</Text>
+              </Text>
+            </View>
           </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Distancia</Text>
-            <Text style={styles.statValue}>{formatDistance(distance)}</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Ritmo</Text>
-            <Text style={styles.statValue}>
-              {distance > 0 ? `${(elapsedTime / 60 / distance).toFixed(2)}` : '--'}
-              <Text style={styles.statUnit}> min/km</Text>
-            </Text>
-          </View>
-        </View>
 
-        <Card title="Mapa de Ruta">
-          <View style={styles.mapPlaceholder}>
-            {isTracking && location ? (
-              <View style={styles.mapContent}>
-                <Text style={styles.mapIcon}>📍</Text>
-                <Text style={styles.mapText}>
-                  Ubicación actual: {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
-                </Text>
-                <Text style={styles.mapPoints}>
-                  Puntos registrados: {route.length}
-                </Text>
-                {route.length > 1 && (
-                  <Text style={styles.routeInfo}>
-                    📊 Ruta mostrándose en mapa interactivo...
+          <Card title="Mapa de Ruta">
+            <View style={styles.mapPlaceholder}>
+              {isTracking && location ? (
+                <View style={styles.mapContent}>
+                  <Text style={styles.mapIcon}>📍</Text>
+                  <Text style={styles.mapText}>
+                    Ubicación actual: {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
                   </Text>
-                )}
+                  <Text style={styles.mapPoints}>
+                    Puntos registrados: {route.length}
+                  </Text>
+                  {route.length > 1 && (
+                    <Text style={styles.routeInfo}>
+                      📊 Ruta mostrándose en mapa interactivo...
+                    </Text>
+                  )}
+                </View>
+              ) : (
+                <View style={styles.mapContent}>
+                  <Text style={styles.mapIcon}>🗺️</Text>
+                  <Text style={styles.mapText}>
+                    {hasPermission === false
+                      ? 'Permisos de ubicación no concedidos'
+                      : 'Presiona "Iniciar" para comenzar a rastrear'}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </Card>
+
+          <Card title="Sensores del Dispositivo">
+            <View style={styles.sensorsInfo}>
+              <View style={styles.sensorRow}>
+                <Text style={styles.sensorIcon}>📡</Text>
+                <View style={styles.sensorText}>
+                  <Text style={styles.sensorName}>GPS</Text>
+                  <Text style={styles.sensorStatus}>
+                    {hasPermission ? 'Activo' : 'Sin permiso'}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.sensorIndicator,
+                    hasPermission ? styles.sensorActive : styles.sensorInactive,
+                  ]}
+                />
               </View>
+              <View style={styles.sensorRow}>
+                <Text style={styles.sensorIcon}>⚡</Text>
+                <View style={styles.sensorText}>
+                  <Text style={styles.sensorName}>Acelerómetro</Text>
+                  <Text style={styles.sensorStatus}>
+                    {isTracking ? 'Monitoreando pasos' : 'Disponible'}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.sensorIndicator,
+                    isTracking ? styles.sensorActive : styles.sensorInactive,
+                  ]}
+                />
+              </View>
+              <View style={styles.sensorRow}>
+                <Text style={styles.sensorIcon}>❤️</Text>
+                <View style={styles.sensorText}>
+                  <Text style={styles.sensorName}>Frecuencia Cardíaca</Text>
+                  <Text style={styles.sensorStatus}>
+                    {isTracking ? 'Conectar dispositivo' : 'Requerido wearable'}
+                  </Text>
+                </View>
+                <View style={[styles.sensorIndicator, styles.sensorInactive]} />
+              </View>
+            </View>
+          </Card>
+
+          <View style={styles.controlsContainer}>
+            {!isTracking ? (
+              <Button
+                title="▶️ INICIAR ENTRENAMIENTO"
+                onPress={startTracking}
+                variant="primary"
+                style={styles.mainButton}
+                textStyle={styles.mainButtonText}
+              />
             ) : (
-              <View style={styles.mapContent}>
-                <Text style={styles.mapIcon}>🗺️</Text>
-                <Text style={styles.mapText}>
-                  {hasPermission === false
-                    ? 'Permisos de ubicación no concedidos'
-                    : 'Presiona "Iniciar" para comenzar a rastrear'}
-                </Text>
-              </View>
+              <Button
+                title="⏹️ FINALIZAR"
+                onPress={stopTracking}
+                variant="danger"
+                style={styles.mainButton}
+                textStyle={styles.mainButtonText}
+              />
             )}
           </View>
-        </Card>
-
-        <Card title="Sensores del Dispositivo">
-          <View style={styles.sensorsInfo}>
-            <View style={styles.sensorRow}>
-              <Text style={styles.sensorIcon}>📡</Text>
-              <View style={styles.sensorText}>
-                <Text style={styles.sensorName}>GPS</Text>
-                <Text style={styles.sensorStatus}>
-                  {hasPermission ? 'Activo' : 'Sin permiso'}
-                </Text>
-              </View>
-              <View
-                style={[
-                  styles.sensorIndicator,
-                  hasPermission ? styles.sensorActive : styles.sensorInactive,
-                ]}
-              />
-            </View>
-            <View style={styles.sensorRow}>
-              <Text style={styles.sensorIcon}>⚡</Text>
-              <View style={styles.sensorText}>
-                <Text style={styles.sensorName}>Acelerómetro</Text>
-                <Text style={styles.sensorStatus}>
-                  {isTracking ? 'Monitoreando pasos' : 'Disponible'}
-                </Text>
-              </View>
-              <View
-                style={[
-                  styles.sensorIndicator,
-                  isTracking ? styles.sensorActive : styles.sensorInactive,
-                ]}
-              />
-            </View>
-            <View style={styles.sensorRow}>
-              <Text style={styles.sensorIcon}>❤️</Text>
-              <View style={styles.sensorText}>
-                <Text style={styles.sensorName}>Frecuencia Cardíaca</Text>
-                <Text style={styles.sensorStatus}>
-                  {isTracking ? 'Conectar dispositivo' : 'Requerido wearable'}
-                </Text>
-              </View>
-              <View style={[styles.sensorIndicator, styles.sensorInactive]} />
-            </View>
-          </View>
-        </Card>
-
-        <View style={styles.controlsContainer}>
-          {!isTracking ? (
-            <Button
-              title="▶️ INICIAR ENTRENAMIENTO"
-              onPress={startTracking}
-              variant="primary"
-              style={styles.mainButton}
-              textStyle={styles.mainButtonText}
-            />
-          ) : (
-            <Button
-              title="⏹️ FINALIZAR"
-              onPress={stopTracking}
-              variant="danger"
-              style={styles.mainButton}
-              textStyle={styles.mainButtonText}
-            />
-          )}
         </View>
-      </View>
-    </>
+      </>
+    </MobileOnlyRoute>
   );
 }
 

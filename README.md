@@ -33,19 +33,32 @@ Aplicación de ejemplo para tesis que demuestra el uso de **Expo + React Native*
 RunTeamApp/
 ├── app/                    # Rutas Expo Router
 │   ├── (tabs)/            # 4 tabs: Home, Equipo, Entrenos, Perfil
-│   │   ├── index.tsx      # Dashboard con estadísticas
-│   │   ├── team.tsx       # Gestión de equipo
-│   │   ├── training.tsx    # Planificación
-│   │   └── profile.tsx     # Perfil de usuario
-│   ├── activity.tsx        # Registro (mobile-only UI)
-│   └── location-tracker.tsx # GPS tracking (mobile-only)
-├── components/             # Componentes reutilizables
-├── data/                  # Datos mock hardcodeados
+│   │   ├── index.tsx      # Dashboard mobile
+│   │   ├── index.web.tsx  # Dashboard web
+│   │   ├── team.tsx       # Equipo mobile
+│   │   ├── team.web.tsx   # Equipo web
+│   │   ├── training.tsx   # Entrenamiento mobile
+│   │   ├── training.web.tsx # Entrenamiento web
+│   │   ├── profile.tsx    # Perfil mobile
+│   │   └── profile.web.tsx # Perfil web
+│   ├── activity.tsx        # Ruta mobile-only con guard de plataforma
+│   └── location-tracker.tsx # Ruta mobile-only con GPS
+├── components/             # UI compartida y shells de plataforma
+├── data/                   # Datos mock hardcodeados
 ├── types/                  # Tipos TypeScript
 └── utils/platform.ts       # Detección de plataforma
 ```
 
 ## Ejecución
+
+### Preparar el entorno
+Antes de levantar la app, instalá las dependencias desde la raíz del proyecto:
+
+```bash
+npm install
+```
+
+Si vas a probar la versión móvil, instalá también Expo Go en el teléfono para poder abrir la app con el QR.
 
 ### Web
 ```bash
@@ -61,6 +74,12 @@ npx expo start
 
 # Escanea el QR con Expo Go (iOS/Android)
 ```
+
+### Flujo recomendado para compartir con el equipo
+1. Clonar el repositorio.
+2. Ejecutar `npm install`.
+3. Probar la versión web con `npm run web`.
+4. Probar la versión móvil con `npx expo start` y escanear el QR desde Expo Go.
 
 ## Detección de Plataforma
 
@@ -78,6 +97,31 @@ const styles = StyleSheet.create({
 // Features mobile-only
 {!isWeb && <GPSFeature />}
 ```
+
+En este repositorio, las pantallas mobile-only están protegidas a nivel de ruta. Eso evita que en web se vean por accidente al entrar directo a la URL.
+
+## Arquitectura Sugerida
+
+La base actual está pensada para una demo seria de single codebase. La decisión importante es no mezclar la lógica de plataforma dentro de la pantalla: la ruta elige el archivo correcto y el layout elige el shell visual. Para mantener eso claro, conviene usar esta separación:
+
+1. UI compartida en `components/`, `data/` y `types/`.
+2. Pantallas por plataforma en `app/(tabs)/*.tsx` para mobile y `app/(tabs)/*.web.tsx` para web.
+3. Features exclusivas de mobile, como GPS y sensores, resueltas como rutas mobile-only.
+4. Shells de plataforma en `app/_layout.tsx` y `app/(tabs)/_layout.tsx` para navegación y chrome.
+5. Si un componente empieza a tener demasiadas condiciones `web/mobile`, conviene partirlo en dos variantes de archivo en lugar de seguir agregando ifs.
+
+Eso deja la demo más clara y más fácil de explicar cuando la compartas con tu equipo o la muestres en la tesis.
+
+## Responsabilidades Por Carpeta
+
+- `app/`: define rutas y navegación.
+- `app/(tabs)/`: contiene las pantallas principales y sus variantes por plataforma.
+- `components/`: guarda UI reutilizable y piezas de shell, como cards, badges, wrappers y guards.
+- `data/`: centraliza los datos de demostración.
+- `types/`: modela las entidades del dominio.
+- `utils/platform.ts`: expone capacidades como `isWeb` e `isMobile` cuando realmente hace falta.
+
+La regla práctica es simple: si la diferencia es de navegación o acceso, se resuelve en ruta o layout; si la diferencia es visual y repetible, se resuelve en componentes; si la diferencia es estructural entre web y mobile, se separa en archivos específicos de plataforma.
 
 ## Stack Recomendado para Proyecto Completo
 
