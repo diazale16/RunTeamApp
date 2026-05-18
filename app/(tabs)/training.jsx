@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Card, Button, Badge, ProgressBar } from '../../components';
-import { trainingPlans } from '../../data/mockData';
-import { isWeb } from '../../utils/platform';
+import { trainingPlans } from '../../data/mockData.js';
+import { isWeb } from '../../utils/platform.js';
 
-const typeColors: Record<string, string> = {
+const typeColors = {
   intervalos: 'warning',
   fondo_largo: 'success',
   tempo: 'info',
@@ -12,7 +12,7 @@ const typeColors: Record<string, string> = {
   sprints: 'danger',
 };
 
-const typeLabels: Record<string, string> = {
+const typeLabels = {
   intervalos: 'Intervalos',
   fondo_largo: 'Fondo Largo',
   tempo: 'Tempo',
@@ -20,7 +20,7 @@ const typeLabels: Record<string, string> = {
   sprints: 'Sprints',
 };
 
-const intensityColors: Record<string, { bg: string; text: string }> = {
+const intensityColors = {
   baja: { bg: '#dcfce7', text: '#16a34a' },
   media: { bg: '#fef3c7', text: '#d97706' },
   alta: { bg: '#fee2e2', text: '#dc2626' },
@@ -109,7 +109,7 @@ export default function TrainingScreen() {
                           <Text style={styles.workoutDesc}>{workout.description}</Text>
                         </View>
                         <View style={[styles.tableCell, styles.cellType]}>
-                          <Badge text={typeLabels[workout.type]} variant={typeColors[workout.type] as any} />
+                          <Badge text={typeLabels[workout.type]} variant={typeColors[workout.type]} />
                         </View>
                         <Text style={[styles.tableCell, styles.cellDuration]}>{workout.duration} min</Text>
                         <Text style={[styles.tableCell, styles.cellDistance]}>{workout.distance ? `${workout.distance} km` : '-'}</Text>
@@ -205,12 +205,12 @@ export default function TrainingScreen() {
                     <View style={styles.workoutInfo}>
                       <Text style={styles.mobileWorkoutName}>{workout.name}</Text>
                       <View style={styles.workoutMeta}>
-                        <Badge text={typeLabels[workout.type]} variant={typeColors[workout.type] as any} />
+                        <Badge text={typeLabels[workout.type]} variant={typeColors[workout.type]} />
                         {workout.distance && <Text style={styles.workoutDistance}>{workout.distance} km</Text>}
                         <Text style={styles.workoutDuration}>{workout.duration} min</Text>
                       </View>
                     </View>
-                    <View style={[styles.intensityBadge, { backgroundColor: intensityColors[workout.intensity].bg }]}>
+                    <View style={[styles.intensityBadge, { backgroundColor: intensityColors[workout.intensity].bg }]}> 
                       <Text style={[styles.intensityText, { color: intensityColors[workout.intensity].text }]}>
                         {workout.intensity.toUpperCase()}
                       </Text>
@@ -603,7 +603,6 @@ export const styles = StyleSheet.create({
   sectionText: {
     fontSize: 14,
     color: '#666',
-    lineHeight: 20,
   },
   qrSection: {
     flexDirection: 'row',

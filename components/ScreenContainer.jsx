@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Platform } from 'react-native';
-import { isWeb } from '../utils/platform';
+import { isWeb } from '../utils/platform.js';
 
-export function ScreenContainer({ children, title }: { children: React.ReactNode; title?: string }) {
+export function ScreenContainer({ children, title }) {
   return (
     <View style={[styles.container, isWeb && styles.containerWeb]}>
       {title && <Text style={styles.title}>{title}</Text>}

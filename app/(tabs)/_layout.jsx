@@ -1,7 +1,6 @@
 import { Slot } from 'expo-router';
-import { WebShell, MobileShell, styles } from '../_layout';
-import { isWeb } from '../../utils/platform';
-import { View } from 'react-native';
+import { WebShell, MobileShell } from '../_layout.jsx';
+import { isWeb } from '../../utils/platform.js';
 
 export default function TabsLayout() {
   if (isWeb) {

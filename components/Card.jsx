@@ -1,14 +1,7 @@
-import { View, Text, StyleSheet, Platform } from 'react-native';
-import { isWeb } from '../utils/platform';
+import { View, Text, StyleSheet } from 'react-native';
+import { isWeb } from '../utils/platform.js';
 
-interface CardProps {
-  title: string;
-  subtitle?: string;
-  children?: React.ReactNode;
-  rightContent?: React.ReactNode;
-}
-
-export function Card({ title, subtitle, children, rightContent }: CardProps) {
+export function Card({ title, subtitle, children, rightContent }) {
   return (
     <View style={[styles.card, isWeb && styles.cardWeb]}>
       <View style={styles.cardHeader}>

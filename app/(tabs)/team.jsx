@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
-import { Card, Badge, Button } from '../../components';
-import { teams, users } from '../../data/mockData';
+import { Card, Badge } from '../../components';
+import { teams, users } from '../../data/mockData.js';
 
 export default function TeamScreen() {
   const team = teams[0];
@@ -65,9 +65,7 @@ export default function TeamScreen() {
         </Text>
         <View style={styles.aiFeature}>
           <Text style={styles.aiFeatureIcon}>🤖</Text>
-          <Text style={styles.aiFeatureText}>
-            Disponible solo en la app móvil
-          </Text>
+          <Text style={styles.aiFeatureText}>Disponible solo en la app móvil</Text>
         </View>
       </Card>
 
@@ -76,116 +74,26 @@ export default function TeamScreen() {
   );
 }
 
-export const styles = StyleSheet.create({
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingTop: 12,
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValueMobile: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#2563eb',
-  },
-  statLabelMobile: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
-  },
-  groupSection: {
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  groupHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  groupNameMobile: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1a1a1a',
-  },
-  runnersRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginBottom: 8,
-  },
-  runnerCardMobile: {
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    minWidth: 90,
-  },
-  runnerNameMobile: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  runnerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  avatarSmall: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  runnerInfo: {
-    flex: 1,
-  },
-  runnerItemName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1a1a1a',
-  },
-  runnerEmailMobile: {
-    fontSize: 13,
-    color: '#666',
-    marginTop: 2,
-  },
-  aiText: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  aiFeature: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: '#dbeafe',
-    borderRadius: 8,
-  },
-  aiFeatureIcon: {
-    fontSize: 20,
-    marginRight: 8,
-  },
-  aiFeatureText: {
-    fontSize: 13,
-    color: '#1e40af',
-    fontWeight: '500',
-  },
-  bottomSpacing: {
-    height: 100,
-  },
+const styles = StyleSheet.create({
+  statsRow: { flexDirection: 'row', justifyContent: 'space-around', paddingTop: 12 },
+  statItem: { alignItems: 'center' },
+  statValueMobile: { fontSize: 28, fontWeight: '700', color: '#2563eb' },
+  statLabelMobile: { fontSize: 14, color: '#666', marginTop: 4 },
+  groupSection: { marginBottom: 16, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
+  groupHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  groupNameMobile: { fontSize: 16, fontWeight: '600', color: '#1a1a1a' },
+  runnersRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  avatar: { width: 50, height: 50, borderRadius: 25, marginBottom: 8 },
+  runnerCardMobile: { alignItems: 'center', padding: 12, backgroundColor: '#f5f5f5', borderRadius: 8, minWidth: 90 },
+  runnerNameMobile: { fontSize: 12, fontWeight: '600', color: '#1a1a1a', textAlign: 'center', marginBottom: 4 },
+  runnerItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
+  avatarSmall: { width: 40, height: 40, borderRadius: 20, marginRight: 12 },
+  runnerInfo: { flex: 1 },
+  runnerItemName: { fontSize: 15, fontWeight: '600', color: '#1a1a1a' },
+  runnerEmailMobile: { fontSize: 13, color: '#666', marginTop: 2 },
+  aiText: { fontSize: 14, color: '#666', lineHeight: 20 },
+  aiFeature: { flexDirection: 'row', alignItems: 'center', marginTop: 12, padding: 12, backgroundColor: '#dbeafe', borderRadius: 8 },
+  aiFeatureIcon: { fontSize: 20, marginRight: 8 },
+  aiFeatureText: { fontSize: 13, color: '#1e40af', fontWeight: '500' },
+  bottomSpacing: { height: 100 },
 });

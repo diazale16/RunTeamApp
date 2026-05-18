@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { Card, Badge, ProgressBar, Button } from '../../components';
-import { currentUser, achievements, subscription } from '../../data/mockData';
-import { isWeb } from '../../utils/platform';
+import { currentUser, achievements, subscription } from '../../data/mockData.js';
+import { isWeb } from '../../utils/platform.js';
 
 export default function ProfileScreen() {
   const unlockedAchievements = achievements.filter((a) => a.unlocked);
@@ -77,7 +77,7 @@ export default function ProfileScreen() {
                       <Text style={styles.achievementIcon}>{achievement.icon}</Text>
                       <Text style={styles.achievementName}>{achievement.name}</Text>
                       <Text style={styles.achievementDesc}>{achievement.description}</Text>
-                      {achievement.unlockedAt && <Text style={styles.achievementDate}>{achievement.unlockedAt}</Text>}
+                      {achievement.unlockedAt && <Text style={styles.achievementDate}>{achievement.unlockedAt}</Text>} 
                     </View>
                   ))}
                 </View>
@@ -743,3 +743,4 @@ export const styles = StyleSheet.create({
     height: 100,
   },
 });
+    

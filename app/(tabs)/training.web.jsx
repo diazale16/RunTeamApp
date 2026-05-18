@@ -1,8 +1,8 @@
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Card, Button, Badge, ProgressBar } from '../../components';
-import { trainingPlans } from '../../data/mockData';
+import { trainingPlans } from '../../data/mockData.js';
 
-const typeColors: Record<string, string> = {
+const typeColors = {
   intervalos: 'warning',
   fondo_largo: 'success',
   tempo: 'info',
@@ -10,7 +10,7 @@ const typeColors: Record<string, string> = {
   sprints: 'danger',
 };
 
-const typeLabels: Record<string, string> = {
+const typeLabels = {
   intervalos: 'Intervalos',
   fondo_largo: 'Fondo Largo',
   tempo: 'Tempo',
@@ -18,7 +18,7 @@ const typeLabels: Record<string, string> = {
   sprints: 'Sprints',
 };
 
-const intensityColors: Record<string, { bg: string; text: string }> = {
+const intensityColors = {
   baja: { bg: '#dcfce7', text: '#16a34a' },
   media: { bg: '#fef3c7', text: '#d97706' },
   alta: { bg: '#fee2e2', text: '#dc2626' },
@@ -91,7 +91,7 @@ export default function TrainingScreenWeb() {
                         <Text style={styles.workoutDesc}>{workout.description}</Text>
                       </View>
                       <View style={[styles.tableCell, styles.cellType]}>
-                        <Badge text={typeLabels[workout.type]} variant={typeColors[workout.type] as any} />
+                        <Badge text={typeLabels[workout.type]} variant={typeColors[workout.type]} />
                       </View>
                       <Text style={[styles.tableCell, styles.cellDuration]}>{workout.duration} min</Text>
                       <Text style={[styles.tableCell, styles.cellDistance]}>{workout.distance ? `${workout.distance} km` : '-'}</Text>
@@ -198,27 +198,23 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
-    gap: 24,
   },
   headerStats: {
     flexDirection: 'row',
-    gap: 24,
-    flex: 1,
+    gap: 40,
   },
   headerStat: {
     alignItems: 'center',
-    flex: 1,
   },
   headerStatValue: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
-    color: '#2563eb',
+    color: '#1e293b',
   },
   headerStatLabel: {
     fontSize: 13,
     color: '#64748b',
     marginTop: 4,
-    textAlign: 'center',
   },
   headerActions: {
     flexDirection: 'row',
@@ -244,26 +240,24 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#1e293b',
-    minWidth: 80,
+    minWidth: 100,
     textAlign: 'center',
   },
   calendarGrid: {
     flexDirection: 'row',
-    gap: 8,
     justifyContent: 'space-between',
+    marginTop: 16,
   },
   calendarDay: {
-    flex: 1,
     alignItems: 'center',
     padding: 12,
+    borderRadius: 10,
     backgroundColor: '#f8fafc',
-    borderRadius: 8,
-    minHeight: 80,
+    flex: 1,
+    marginHorizontal: 4,
   },
   calendarDayToday: {
-    backgroundColor: '#eff6ff',
-    borderWidth: 2,
-    borderColor: '#2563eb',
+    backgroundColor: '#2563eb',
   },
   calendarDayLabel: {
     fontSize: 12,
@@ -272,32 +266,35 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   calendarDayLabelToday: {
-    color: '#2563eb',
+    color: '#fff',
   },
   workoutIndicator: {
-    marginTop: 8,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#eff6ff',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   workoutIndicatorText: {
-    fontSize: 24,
+    fontSize: 16,
   },
   workoutsTable: {
-    gap: 0,
+    marginTop: 12,
   },
   tableHeader: {
     flexDirection: 'row',
     paddingVertical: 12,
-    borderBottomWidth: 2,
-    borderBottomColor: '#e2e8f0',
     backgroundColor: '#f8fafc',
+    borderRadius: 8,
     paddingHorizontal: 12,
   },
   tableRow: {
     flexDirection: 'row',
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
     alignItems: 'center',
-    paddingHorizontal: 12,
   },
   tableRowEven: {
     backgroundColor: '#fafbfc',
@@ -306,48 +303,52 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   cellName: {
-    flex: 1.5,
+    flex: 2,
   },
   cellType: {
-    flex: 0.8,
+    flex: 1,
   },
   cellDuration: {
     flex: 0.7,
     textAlign: 'center',
-    fontSize: 13,
-    color: '#1e293b',
+    fontSize: 14,
+    color: '#64748b',
   },
   cellDistance: {
     flex: 0.7,
     textAlign: 'center',
-    fontSize: 13,
-    color: '#1e293b',
+    fontSize: 14,
+    color: '#64748b',
   },
   cellIntensity: {
     flex: 0.8,
     alignItems: 'center',
   },
   workoutName: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
     color: '#1e293b',
   },
   workoutDesc: {
-    fontSize: 13,
-    color: '#64748b',
+    fontSize: 12,
+    color: '#94a3b8',
     marginTop: 2,
   },
   intensityBadge: {
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 6,
+    borderRadius: 4,
   },
   intensityText: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '700',
   },
   nextWorkout: {
-    gap: 12,
+    padding: 16,
+    backgroundColor: '#f8fafc',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   nextWorkoutHeader: {
     flexDirection: 'row',
@@ -356,26 +357,25 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   nextWorkoutDay: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#1e293b',
+    color: '#2563eb',
   },
   nextWorkoutName: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#2563eb',
-    marginVertical: 8,
+    color: '#1e293b',
+    marginBottom: 12,
   },
   nextWorkoutDetails: {
     gap: 6,
-    marginBottom: 12,
+    marginBottom: 16,
   },
   nextWorkoutDetail: {
     fontSize: 13,
     color: '#64748b',
   },
   nextWorkoutActions: {
-    flexDirection: 'row',
     gap: 8,
   },
   sessionsList: {
@@ -385,13 +385,11 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    padding: 12,
+    backgroundColor: '#f8fafc',
+    borderRadius: 8,
   },
-  sessionInfo: {
-    flex: 1,
-  },
+  sessionInfo: {},
   sessionName: {
     fontSize: 14,
     fontWeight: '600',
@@ -399,11 +397,11 @@ export const styles = StyleSheet.create({
   },
   sessionDate: {
     fontSize: 12,
-    color: '#64748b',
+    color: '#94a3b8',
     marginTop: 2,
   },
   sessionStatus: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   sessionAttendance: {
     fontSize: 16,
@@ -411,22 +409,21 @@ export const styles = StyleSheet.create({
     color: '#2563eb',
   },
   sessionLabel: {
-    fontSize: 11,
-    color: '#64748b',
+    fontSize: 10,
+    color: '#94a3b8',
   },
   weekProgress: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 8,
+    marginTop: 12,
   },
   weekLabel: {
     fontSize: 13,
     color: '#64748b',
   },
   weekValue: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '600',
     color: '#2563eb',
   },
   bottomSpacing: {

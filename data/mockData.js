@@ -1,6 +1,4 @@
-import { User, Team, TrainingPlan, Activity, Achievement, Subscription } from '../types';
-
-export const currentUser: User = {
+export const currentUser = {
   id: 'user-1',
   name: 'Juan Pérez',
   email: 'juan@runteam.com',
@@ -9,7 +7,7 @@ export const currentUser: User = {
   teamId: 'team-1',
 };
 
-export const users: User[] = [
+export const users = [
   currentUser,
   { id: 'user-2', name: 'María García', email: 'maria@runteam.com', role: 'corredor', avatar: 'https://i.pravatar.cc/150?u=user2', teamId: 'team-1' },
   { id: 'user-3', name: 'Carlos López', email: 'carlos@runteam.com', role: 'corredor', avatar: 'https://i.pravatar.cc/150?u=user3', teamId: 'team-1' },
@@ -18,7 +16,7 @@ export const users: User[] = [
   { id: 'user-6', name: 'Laura Rodríguez', email: 'laura@runteam.com', role: 'corredor', avatar: 'https://i.pravatar.cc/150?u=user6', teamId: 'team-1' },
 ];
 
-export const teams: Team[] = [
+export const teams = [
   {
     id: 'team-1',
     name: 'Corredores Urbanos',
@@ -32,7 +30,7 @@ export const teams: Team[] = [
   },
 ];
 
-export const trainingPlans: TrainingPlan[] = [
+export const trainingPlans = [
   {
     id: 'plan-1',
     name: 'Plan 10K - 8 Semanas',
@@ -58,7 +56,7 @@ export const trainingPlans: TrainingPlan[] = [
   },
 ];
 
-export const activities: Activity[] = [
+export const activities = [
   { id: 'act-1', userId: 'user-2', date: '2026-04-14', type: 'running', duration: 45, distance: 8.5, pace: 5.3, completed: true },
   { id: 'act-2', userId: 'user-2', date: '2026-04-12', type: 'running', duration: 30, distance: 5.2, pace: 5.8, completed: true },
   { id: 'act-3', userId: 'user-3', date: '2026-04-14', type: 'running', duration: 60, distance: 12.0, pace: 5.0, completed: true },
@@ -66,7 +64,7 @@ export const activities: Activity[] = [
   { id: 'act-5', userId: 'user-2', date: '2026-04-10', type: 'running', duration: 40, distance: 7.0, pace: 5.7, completed: true },
 ];
 
-export const achievements: Achievement[] = [
+export const achievements = [
   { id: 'ach-1', name: 'Primer Paso', description: 'Completaste tu primera carrera', icon: '🎯', unlocked: true, unlockedAt: '2026-01-15' },
   { id: 'ach-2', name: 'Semana Perfecta', description: 'Entrenaste 5 días seguidos', icon: '🔥', unlocked: true, unlockedAt: '2026-02-20' },
   { id: 'ach-3', name: 'Maratoniano', description: 'Corre tu primera maratón', icon: '🏃', unlocked: false },
@@ -74,7 +72,7 @@ export const achievements: Achievement[] = [
   { id: 'ach-5', name: 'Constante', description: 'Mantén tu racha por 30 días', icon: '💪', unlocked: false },
 ];
 
-export const subscription: Subscription = {
+export const subscription = {
   id: 'sub-1',
   userId: 'user-1',
   plan: 'premium',

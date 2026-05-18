@@ -1,374 +1,298 @@
-# RunTeamApp - Guía de Arquitectura
+# RunTeamApp - Guía De Arquitectura
 
-Este documento responde las preguntas más comunes sobre arquitectura y patrones en apps React Native + Expo con soporte mobile y web.
+Este proyecto está normalizado a JavaScript y usa Expo Router como fuente de verdad para las rutas. Esta guía describe las decisiones activas, cómo se compone la app y cómo leer cada capa del sistema.
 
----
+## Objetivo
 
-## 1. Patrón de Estilos - Respuesta a tu pregunta ✅
+Mantener una base única para mobile y web sin mezclar la lógica de plataforma dentro de cada pantalla. Si el comportamiento cambia por plataforma, se separa en archivos distintos; si solo cambia la navegación o el acceso, se resuelve en ruta o guard.
 
-### ¿Es correcto lo que agregaste a `index.web.tsx`?
+## Principios
 
-**Sí, totalmente correcto.** Aquí está el por qué:
+- Expo Router gobierna la navegación y la estructura de pantallas.
+- `app/` contiene las rutas reales; `routes/` agrega semántica.
+- El estado del servidor pertenece a TanStack Query.
+- El estado local y de sesión ligera pertenece a `zustand`.
+- Los wrappers de plataforma viven cerca de la raíz para que el resto de la app no conozca detalles de mobile/web.
+- La documentación debe permitir reconstruir un template mínimo sin tener que leer toda la implementación.
 
-#### El Problema
-Cuando Expo Router compila para web, **solo carga archivos `.web.tsx`**. Los imports desde archivos `.tsx` (mobile) no se incluyen en el bundle de web. Por lo tanto:
+## Estado Actual
 
-```tsx
-// ❌ ESTO NO FUNCIONA EN WEB (el archivo móvil no se carga)
-import { styles } from './index';  // index.tsx no existe en bundle web
+- Código de aplicación en `.jsx` y `.web.jsx`.
+- Sin archivos `.ts`, `.tsx`, `tsconfig.json` ni declaraciones TypeScript.
+- NativeWind activado en el bootstrap de la app.
+- Zustand para estado global y slice de auth.
+- TanStack Query para datos remotos y prefetch.
+- Rutas mobile-only protegidas con guards.
 
-// ✅ ESTO SÍ FUNCIONA (cada variante tiene sus propios estilos)
-export const styles = StyleSheet.create({ ... });
+## Organización
+
+```text
+app/
+components/
+data/
+providers/
+routes/
+services/
+store/
+utils/
 ```
 
-#### La Solución - Patrón de Dos Variantes
+## Cómo Leer La App
 
-```
-app/(tabs)/
-├── index.tsx              # Mobile-only (limpio, solo React Native)
-├── index.web.tsx          # Web-only (con estilos web completos)
-├── team.tsx               # Mobile-only
-├── team.web.tsx           # Web-only (con estilos web)
-└── ...
-```
+Una lectura útil de arriba hacia abajo es la siguiente:
 
-**Cada archivo `.web.tsx` debe exportar su propio objeto `styles` completo:**
+1. `app/_layout.jsx` define la envoltura raíz, monta providers y registra la estructura principal del router.
+2. `app/(tabs)/_layout.jsx` elige shell web o shell mobile.
+3. `providers/AppProviders.jsx` crea el cliente de queries y ejecuta la inicialización global.
+4. `store/appStore.js` expone el estado de dominio y auth.
+5. `routes/appRoutes.js` y `routes/navigation.js` ofrecen navegación semántica.
+6. `services/api.js` prepara el acceso a backend con token.
 
-```tsx
-// app/(tabs)/index.web.tsx
-export default function HomeScreenWeb() {
-  return <ScrollView style={styles.scrollWeb}>...</ScrollView>;
-}
+## RootLayout
 
-export const styles = StyleSheet.create({
-  scrollWeb: { /* estilos específicos para web */ },
-  webContainer: { /* ... */ },
-  // ... todos los estilos necesarios
-});
-```
+`app/_layout.jsx` es el layout raíz que Expo Router monta automáticamente. No se importa manualmente desde pantallas: el router detecta el archivo y lo usa como punto de entrada de toda la jerarquía de rutas.
 
-**Lo que hiciste fue exactamente esto** - bien hecho. ✅
+Responsabilidades de `RootLayout`:
 
----
+- Envolver la app en `AppProviders`.
+- Configurar la `StatusBar` según plataforma.
+- Declarar el `Stack` principal del router.
+- Registrar rutas de alto nivel como `activity` y `location-tracker`.
+- Exponer `WebShell` y `MobileShell` como wrappers reutilizables del layout interno de tabs.
 
-## 2. Organización de Carpetas - ¿Puedo crear subdirectorios?
+Importante: `RootLayout` no renderiza una pantalla de negocio; renderiza el contenedor base para el resto de la aplicación.
 
-### Sí, es perfectamente válido. Aquí están los patrones recomendados:
+## Shells De Plataforma
 
-#### Opción A: Estructura Plana (Actual)
-```
-app/(tabs)/
-├── index.tsx
-├── index.web.tsx
-├── team.tsx
-├── team.web.tsx
-├── training.tsx
-├── training.web.tsx
-└── profile.tsx
-└── profile.web.tsx
-```
-**Ventajas:** Simpleza, fácil de escanear
-**Desventajas:** Mucho duplicado en la raíz
+Los shells están en el mismo archivo que `RootLayout` para dejar explícita la relación entre layout y presentación global.
 
-#### Opción B: Organizada por Pantalla (Recomendado para Escalabilidad)
-```
-app/(tabs)/
-├── home/
-│   ├── index.tsx
-│   ├── index.web.tsx
-│   └── useHomeData.ts
-├── team/
-│   ├── index.tsx
-│   ├── index.web.tsx
-│   └── useTeamData.ts
-├── training/
-│   ├── index.tsx
-│   ├── index.web.tsx
-│   └── useTrainingData.ts
-└── profile/
-    ├── index.tsx
-    ├── index.web.tsx
-    └── useProfileData.ts
-```
+### WebShell
 
-**Cómo funciona con Expo Router:**
-- `/team` → carga `team/index.tsx` (mobile) o `team/index.web.tsx` (web)
-- Expo Router automáticamente elige la variante correcta
-- ✅ **Sí, el fallback de plataforma funciona en subdirectorios**
+`WebShell` organiza la experiencia web con una sidebar fija, un header superior y un área de contenido central.
 
-#### Opción C: Por Feature (Para proyectos grandes)
-```
-app/(tabs)/
-├── _layout.tsx
-├── home/
-│   ├── _layout.tsx
-│   ├── index.tsx
-│   ├── index.web.tsx
-│   └── components/
-├── team/
-│   ├── _layout.tsx
-│   ├── index.tsx
-│   ├── index.web.tsx
-│   ├── group-details.tsx
-│   └── group-details.web.tsx
-└── ...
-```
+Utilidad:
 
-**Recomendación:** Usa Opción B para este proyecto - ofrece buen balance.
+- hace visible la navegación por módulos;
+- aprovecha mejor el ancho de pantalla;
+- muestra el contexto actual del módulo activo;
+- mantiene la navegación semántica usando `tabNavigationItems` y `goToTab`.
 
----
+### MobileShell
 
-## 3. Gestión del Router - Mejores Prácticas
+`MobileShell` organiza la experiencia móvil con contenido principal y tabs inferiores.
 
-### Situación Actual
-Tienes routing básico type-safe:
+Utilidad:
 
-```tsx
-// app/_layout.tsx
-const tabRoutes: Record<TabName, string> = {
-  index: '/(tabs)',
-  team: '/(tabs)/team',
-  training: '/(tabs)/training',
-  profile: '/(tabs)/profile',
-};
+- respeta patrones nativos de navegación;
+- reduce fricción táctil;
+- mantiene el mismo set de rutas semánticas que la web.
 
-const getTabRoute = (name: TabName) => tabRoutes[name];
-```
+### Relación con `app/(tabs)/_layout.jsx`
 
-### Mejora Recomendada: Hook de Navegación
+`app/(tabs)/_layout.jsx` decide qué shell usar:
 
-**Crear `hooks/useNavigation.ts`:**
+- web → `WebShell`
+- mobile → `MobileShell`
 
-```tsx
-import { useRouter } from 'expo-router';
+El `Slot` actúa como contenedor de la pantalla activa dentro de ese shell.
 
-export type AppRoute = 
-  | 'home'
-  | 'team'
-  | 'training'
-  | 'profile'
-  | 'activity'
-  | 'location-tracker';
+## AppProviders
 
-const routeMap: Record<AppRoute, string> = {
-  home: '/(tabs)',
-  team: '/(tabs)/team',
-  training: '/(tabs)/training',
-  profile: '/(tabs)/profile',
-  activity: '/activity',
-  'location-tracker': '/location-tracker',
-};
+`providers/AppProviders.jsx` es el punto donde se colocan los providers globales y la inicialización de estado transversal.
 
-export function useAppNavigation() {
-  const router = useRouter();
+Qué hace hoy:
 
-  return {
-    goToHome: () => router.push(routeMap.home),
-    goToTeam: () => router.push(routeMap.team),
-    goToTraining: () => router.push(routeMap.training),
-    goToProfile: () => router.push(routeMap.profile),
-    goToActivity: () => router.push(routeMap.activity),
-    goToLocationTracker: () => router.push(routeMap['location-tracker']),
-    push: (route: AppRoute) => router.push(routeMap[route]),
-  };
-}
-```
+- crea una instancia de `QueryClient`;
+- monta `QueryClientProvider`;
+- simula la rehidratación de sesión leyendo un token persistido en `localStorage` en web;
+- si detecta token, setea `token` y `user` en el store y precarga `me` en la cache de queries;
+- marca el store como hidratado para que los guards puedan decidir;
+- deja el árbol listo para que cualquier pantalla use `useQuery` o `useMutation`.
 
-**Uso en componentes:**
+Por qué existe:
 
-```tsx
-import { useAppNavigation } from '../hooks/useNavigation';
+- centraliza la inicialización una sola vez;
+- evita repetir setup en cada pantalla;
+- hace posible diferenciar entre “app cargando”, “sesión válida” y “sesión ausente”.
 
-export function TeamCard() {
-  const nav = useAppNavigation();
+Qué no debería hacer:
 
-  return <Button onPress={() => nav.goToTeam()} title="Ver Equipo" />;
-}
-```
+- no debería contener lógica específica de pantalla;
+- no debería duplicar estado remoto que ya vive en TanStack Query;
+- no debería convertirse en un contenedor de negocio.
 
-**Ventajas:**
-- ✅ Type-safe: El IDE autocomplete te sugiere rutas disponibles
-- ✅ Cambios centralizados: Editas rutas en un solo lugar
-- ✅ Mantenible: Evita strings duplicados en toda la app
+## Store
 
----
+`store/appStore.js` usa Zustand como store global.
 
-## 4. Gestión de Estado - React Native + Web
+### Qué guarda
 
-### Opciones por Escala de Proyecto
+- datos base de demo: `currentUser`, `teams`, `trainingPlans`, `activities`, `subscription`;
+- estado de UI o contexto compartido: `activeTeamId`;
+- auth ligera: `token`, `user`, `hydrated`.
 
-#### Opción 1: Context API (Recomendado para DEMO)
-**Para:** Apps pequeñas, prototipos, demostraciones
-**Setup:** Cero dependencias adicionales
+### Qué resuelve
 
-```tsx
-// context/AppContext.tsx
-import React, { createContext, useReducer } from 'react';
+- leer y escribir estado global sin prop drilling;
+- compartir estado entre layouts, pantallas y helpers de navegación;
+- almacenar flags de sesión que no justifican un backend roundtrip.
 
-export type AppState = {
-  currentUser: typeof currentUser;
-  activities: typeof activities[];
-  teams: typeof teams[];
-};
+### Qué no resuelve
 
-const initialState: AppState = {
-  currentUser,
-  activities,
-  teams,
-};
+- no reemplaza el estado del servidor;
+- no debería duplicar listas o detalles que ya están cacheados por TanStack Query;
+- no es el lugar para lógica de fetch o sincronización de red.
 
-export const AppContext = createContext<AppState>(initialState);
+### Regla práctica
 
-export function AppProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <AppContext.Provider value={initialState}>
-      {children}
-    </AppContext.Provider>
-  );
-}
+Si el dato representa “lo que el usuario ve o modifica localmente” y no necesita revalidación frecuente, puede vivir en Zustand. Si el dato viene del backend y requiere cache, stale/revalidate o invalidation, pertenece a TanStack Query.
 
-export function useAppState() {
-  const context = React.useContext(AppContext);
-  if (!context) {
-    throw new Error('useAppState debe usarse dentro de AppProvider');
-  }
-  return context;
+## Ruteo
+
+La navegación se estructura en dos capas:
+
+### 1. Rutas reales
+
+Viven en `app/` y son las que Expo Router interpreta.
+
+### 2. Capa semántica
+
+`routes/appRoutes.js` y `routes/navigation.js` describen la intención:
+
+- rutas con nombre estable;
+- navegación sin strings sueltos;
+- helpers reutilizables para tabs y pantallas.
+
+Esto mejora la legibilidad y facilita extraer un template más simple después.
+
+## Consumo De APIs
+
+La app está pensada para dos tipos de consumo:
+
+### APIs nativas
+
+Se consumen desde el código de plataforma o mediante utilidades cercanas a la raíz.
+
+Ejemplos:
+
+- Expo Location para rutas mobile-only;
+- Expo Router para navegación y layouts;
+- `StatusBar` de Expo para adaptar la barra del sistema.
+
+### APIs de backend
+
+Se consumen on demand con TanStack Query.
+
+Patrón recomendado:
+
+- `useQuery` para lecturas;
+- `useMutation` para escrituras;
+- `prefetchQuery` para datos críticos al iniciar;
+- invalidación de queries después de mutaciones.
+
+### Arranque vs on demand
+
+No hay una única estrategia correcta. Esta base favorece on demand, con un arranque ligero:
+
+- arranque: rehidratar auth y prefetch de datos críticos;
+- on demand: el resto de lecturas y escrituras por pantalla.
+
+Eso evita bloquear toda la interfaz por una dependencia dura del backend.
+
+## Auth Y Flujo De Datos
+
+La secuencia recomendada es:
+
+1. La app arranca y `AppProviders` intenta rehidratar la sesión.
+2. Si existe token, se guarda en `zustand` y se precargan datos críticos.
+3. Si no existe token, la app puede ir a `Login` o mostrar contenido público.
+4. Las pantallas usan TanStack Query para pedir datos específicos.
+5. Las mutaciones actualizan cache y, si hace falta, un slice local pequeño en Zustand.
+
+Este proyecto usa una simulación de login para no depender de un backend real.
+
+## Convención De Plataformas
+
+- `*.jsx` se usan como base para mobile.
+- `*.web.jsx` se usan para la variante web cuando hace falta una UI distinta.
+- Las rutas móviles con GPS o sensores deben quedar protegidas para que no sean accesibles en web.
+
+Ejemplo:
+
+```js
+import { isWeb } from '../utils/platform.js';
+
+if (isWeb) {
+  // shell o estilos web
 }
 ```
 
-**Uso:**
+## NativeWind
 
-```tsx
-import { useAppState } from '../context/AppContext';
+NativeWind está preparado a nivel de configuración:
 
-export default function HomeScreen() {
-  const { currentUser, teams } = useAppState();
-  return <Text>{currentUser.name}</Text>;
+- `babel.config.js` integra NativeWind con Expo.
+- `tailwind.config.js` cubre `app/`, `components/`, `routes/`, `providers/`, `store/`, `services/`, `data/` y `utils/`.
+
+Regla práctica: usar NativeWind en componentes compartidos donde reduzca ruido de `StyleSheet`, pero no forzar la migración de todo el código de una sola vez.
+
+## Responsabilidad De Cada Capa
+
+- `app/`: navegación y composición de pantallas.
+- `components/`: UI reutilizable, guards y shells.
+- `providers/`: setup transversal de estado y clientes.
+- `store/`: estado local y auth ligera.
+- `services/`: cliente HTTP y wrappers de integración.
+- `routes/`: rutas semánticas y helpers de navegación.
+- `data/`: mock data de la demo.
+- `utils/`: utilidades agnósticas de negocio.
+
+## Criterio Para Separar Archivos
+
+Divide en variantes distintas cuando:
+
+- la UI web necesita un layout más amplio o tablas;
+- mobile necesita acceso a sensores, GPS o permisos;
+- una pantalla empieza a acumular demasiadas condiciones `web/mobile`;
+- el costo de mantener una sola implementación supera el beneficio de compartirla.
+
+## Qué Documentar En El Template Simplificado
+
+Cuando extraigas la versión mínima para tesis, conserva como mínimo:
+
+- qué hace cada layout;
+- qué vive en Zustand y qué vive en TanStack Query;
+- cuándo se usa arranque y cuándo on demand;
+- cómo se resuelven rutas mobile-only;
+- cómo se conectan las APIs nativas y las APIs backend.
+
+## Reglas De Arquitectura
+
+- `app/` contiene las rutas reales de Expo Router.
+- `routes/` solo expone nombres semánticos y helpers de navegación.
+- `components/` guarda UI reutilizable y shells visuales.
+- `store/` contiene el estado global local.
+- `services/` encapsula acceso a API y wrappers de plataforma.
+- `data/` centraliza los mocks de la demo.
+
+## Convención De Plataformas
+
+- `*.jsx` se usan como base para mobile.
+- `*.web.jsx` se usan para la variante web cuando hace falta una UI distinta.
+- Las rutas móviles con GPS o sensores deben quedar protegidas para que no sean accesibles en web.
+
+Ejemplo:
+
+```js
+import { isWeb } from '../utils/platform.js';
+
+if (isWeb) {
+  // shell o estilos web
 }
 ```
 
-#### Opción 2: Zustand (Recomendado para PRODUCCIÓN)
-**Para:** Apps medianas-grandes, feature-rich
-**Setup:** Una dependency adicional
-**Ventajas:** Más simple que Redux, funciona perfectamente en RN+Web
+## Próximos Pasos Recomendados
 
-```tsx
-// store/appStore.ts
-import { create } from 'zustand';
-import { currentUser, activities, teams } from '../data/mockData';
-
-type AppStore = {
-  user: typeof currentUser;
-  activities: typeof activities[];
-  teams: typeof teams[];
-  setUser: (user: typeof currentUser) => void;
-  addActivity: (activity: typeof activities[0]) => void;
-};
-
-export const useAppStore = create<AppStore>((set) => ({
-  user: currentUser,
-  activities,
-  teams,
-  setUser: (user) => set({ user }),
-  addActivity: (activity) =>
-    set((state) => ({ activities: [activity, ...state.activities] })),
-}));
-```
-
-**Uso:**
-
-```tsx
-import { useAppStore } from '../store/appStore';
-
-export default function ProfileScreen() {
-  const { user, setUser } = useAppStore();
-  
-  return (
-    <Button
-      title="Actualizar"
-      onPress={() => setUser({ ...user, name: 'Nuevo nombre' })}
-    />
-  );
-}
-```
-
-**Comparación:**
-| Feature | Context API | Zustand | Redux |
-|---------|-------------|---------|-------|
-| Setup | Fácil | Fácil | Complejo |
-| Tamaño | Ninguno | ~1KB | ~5KB |
-| DevTools | No | Sí | Excelente |
-| Performance | OK | Excelente | Excelente |
-| RN + Web | ✅ | ✅✅ | ✅ |
-| Aprendizaje | Rápido | Rápido | Lento |
-
-### Recomendación para RunTeamApp
-- **Ahora (demo):** Context API básico
-- **Si necesitas persistencia:** Agrega `zustand` + `zustand/middleware` para localStorage
-- **Si crece mucho:** Migra a Zustand o Redux
-
----
-
-## 5. Convención de Nombres: `.mobile.tsx` vs Default
-
-### Respuesta: Sigue el Estándar Expo
-
-#### ❌ NO RECOMENDADO: Usar `.mobile.tsx`
-```
-index.mobile.tsx    # ❌ Expo Router no reconoce esto
-index.web.tsx       # ✅ Esto sí
-```
-
-Expo Router prioriza:
-1. `.native.tsx` → para React Native (iOS/Android)
-2. `.web.tsx` → para web
-3. `.ios.tsx`, `.android.tsx` → específicos del SO
-4. `.tsx` → fallback por defecto
-
-**Problema con `.mobile.tsx`:** Expo no lo reconoce como variante específica.
-
-#### ✅ RECOMENDADO: Patrón Actual
-```
-index.tsx           # Carga en mobile (fallback por defecto)
-index.web.tsx       # Carga en web (específico)
-```
-
-**Cómo funciona:**
-- En iOS/Android: Expo Metro carga `index.tsx`
-- En Web: Expo carga `index.web.tsx`
-- Es el patrón estándar en el ecosistema Expo
-
-#### Alternativa (si quieres ser explícito):
-```
-index.native.tsx    # ✅ Funciona también
-index.web.tsx       # ✅ Explícito para web
-```
-
-Pero **no hay ventaja sobre `index.tsx`** - es más verborragee.
-
-**Recomendación:** Mantén:
-- `*.tsx` para mobile
-- `*.web.tsx` para web
-
----
-
-## Resumen de Cambios Implementados
-
-### ✅ Lo que ya hiciste bien:
-1. **Estilos en web variants** - Cada `.web.tsx` tiene su propio `StyleSheet.create()`
-2. **Componentes limpios** - Removimos `isWeb` conditionals
-3. **Guard pattern** - `MobileOnlyRoute` previene acceso web a rutas mobile
-
-### 🎯 Próximas Mejoras (Opcional):
-1. **Organiza en carpetas** - Usa Opción B (subdirectorios por screen)
-2. **Crea hook de navegación** - Centraliza todas las rutas
-3. **Evalúa estado global** - Context API está bien para demo, Zustand para producción
-4. **Mantén el naming** - `.tsx` para mobile, `.web.tsx` para web
-
----
-
-## Referencias
-
-- [Expo Router Platform Specific Module Resolution](https://docs.expo.dev/routing/appearance-based-routing/)
-- [React Native Web Documentation](https://necolas.github.io/react-native-web/)
-- [Zustand Documentation](https://github.com/pmndrs/zustand)
+1. Mantener esta guía como la fuente principal para extraer el template mínimo.
+2. Si quieres simplificar más, recorta primero el estado de demo y luego las shells.
+3. Cuando se agregue backend real, reemplazar la simulación del login y documentar el contrato de sesión.

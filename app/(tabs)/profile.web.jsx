@@ -1,13 +1,14 @@
-import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { Card, Badge, ProgressBar, Button } from '../../components';
-import { currentUser, achievements, subscription } from '../../data/mockData';
+import { currentUser, achievements, subscription } from '../../data/mockData.js';
+import { isWeb } from '../../utils/platform.js';
 
 export default function ProfileScreenWeb() {
   const unlockedAchievements = achievements.filter((a) => a.unlocked);
   const lockedAchievements = achievements.filter((a) => !a.unlocked);
 
   return (
-    <ScrollView style={styles.scrollWeb} contentContainerStyle={styles.scrollContentWeb} showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.scrollWeb} contentContainerStyle={styles.scrollContentWeb}>
       <View style={styles.webContainer}>
         <View style={styles.webHeader}>
           <View style={styles.profileSection}>
@@ -71,7 +72,7 @@ export default function ProfileScreenWeb() {
                     <Text style={styles.achievementIcon}>{achievement.icon}</Text>
                     <Text style={styles.achievementName}>{achievement.name}</Text>
                     <Text style={styles.achievementDesc}>{achievement.description}</Text>
-                    {achievement.unlockedAt && <Text style={styles.achievementDate}>{achievement.unlockedAt}</Text>}
+                    {achievement.unlockedAt && <Text style={styles.achievementDate}>{achievement.unlockedAt}</Text>} 
                   </View>
                 ))}
               </View>
@@ -152,6 +153,8 @@ export default function ProfileScreenWeb() {
             </Card>
           </View>
         </View>
+
+        <View style={styles.bottomSpacing} />
       </View>
     </ScrollView>
   );
@@ -188,15 +191,15 @@ export const styles = StyleSheet.create({
     gap: 24,
   },
   profileSection: {
-    flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-start',
     gap: 20,
   },
   webAvatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
+    borderWidth: 4,
+    borderColor: '#e2e8f0',
   },
   profileInfo: {
     flex: 1,
@@ -219,24 +222,26 @@ export const styles = StyleSheet.create({
   },
   profileActions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 12,
   },
   subscriptionBadge: {
-    flex: 1,
+    backgroundColor: '#f8fafc',
     padding: 16,
-    backgroundColor: '#f0fdf4',
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#dcfce7',
+    borderColor: '#e2e8f0',
+    minWidth: 220,
   },
   subscriptionMain: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 8,
   },
   subscriptionPlan: {
     fontSize: 16,
     fontWeight: '700',
     color: '#1e293b',
-    marginBottom: 4,
   },
   subscriptionDates: {
     fontSize: 13,
@@ -251,28 +256,31 @@ export const styles = StyleSheet.create({
   },
   webSide: {
     flex: 1,
-    maxWidth: 360,
+    maxWidth: 380,
   },
   statsCardsRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 20,
+    gap: 16,
+    marginBottom: 24,
   },
   statCard: {
     flex: 1,
-    padding: 16,
+    padding: 20,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   statIcon: {
     fontSize: 28,
     marginBottom: 8,
   },
   statValue: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '700',
     color: '#2563eb',
   },
@@ -285,11 +293,11 @@ export const styles = StyleSheet.create({
   achievementsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 16,
   },
   achievementCard: {
-    width: '23%',
-    padding: 12,
+    width: '30%',
+    padding: 16,
     backgroundColor: '#f8fafc',
     borderRadius: 10,
     borderWidth: 1,
@@ -297,11 +305,11 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   achievementIcon: {
-    fontSize: 28,
-    marginBottom: 6,
+    fontSize: 36,
+    marginBottom: 8,
   },
   achievementName: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
     color: '#1e293b',
     textAlign: 'center',
@@ -315,43 +323,44 @@ export const styles = StyleSheet.create({
   achievementDate: {
     fontSize: 10,
     color: '#94a3b8',
-    marginTop: 4,
+    marginTop: 8,
   },
   lockedGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 16,
   },
   lockedCard: {
-    width: '23%',
-    padding: 12,
-    backgroundColor: '#f8fafc',
+    width: '45%',
+    padding: 16,
+    backgroundColor: '#fafafa',
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
+    opacity: 0.6,
     alignItems: 'center',
-    opacity: 0.5,
   },
   lockedIcon: {
-    fontSize: 24,
-    marginBottom: 4,
+    fontSize: 28,
+    marginBottom: 8,
+    opacity: 0.5,
   },
   lockedName: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#1e293b',
+    color: '#94a3b8',
     textAlign: 'center',
   },
   lockedDesc: {
     fontSize: 11,
-    color: '#64748b',
+    color: '#cbd5e1',
     textAlign: 'center',
-    marginTop: 2,
+    marginTop: 4,
   },
   subCard: {
-    padding: 12,
+    padding: 16,
     backgroundColor: '#f8fafc',
-    borderRadius: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   subHeader: {
     flexDirection: 'row',
@@ -360,41 +369,36 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subPlanName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
     color: '#1e293b',
   },
   subDates: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#64748b',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   subFeatures: {
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    gap: 6,
   },
   subFeaturesTitle: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
     color: '#1e293b',
     marginBottom: 8,
   },
   subFeature: {
-    fontSize: 12,
-    color: '#64748b',
-    marginBottom: 4,
+    fontSize: 13,
+    color: '#16a34a',
   },
   settingsList: {
-    gap: 12,
+    gap: 0,
   },
   settingsItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
   },
@@ -403,17 +407,16 @@ export const styles = StyleSheet.create({
     color: '#1e293b',
   },
   settingsValue: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#64748b',
   },
   streakCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#fff3cd',
-    borderRadius: 8,
-    marginBottom: 12,
+    padding: 16,
+    backgroundColor: '#fef3c7',
+    borderRadius: 10,
   },
   streakMain: {
     flexDirection: 'row',
@@ -421,30 +424,31 @@ export const styles = StyleSheet.create({
     gap: 12,
   },
   streakEmoji: {
-    fontSize: 28,
+    fontSize: 40,
   },
   streakValue: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: '700',
     color: '#1e293b',
   },
   streakLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#64748b',
   },
   streakBest: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   streakBestValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#d97706',
+    color: '#2563eb',
   },
   streakBestLabel: {
     fontSize: 11,
     color: '#64748b',
   },
   reminderInfo: {
+    marginTop: 12,
     padding: 12,
     backgroundColor: '#dbeafe',
     borderRadius: 8,
@@ -452,6 +456,160 @@ export const styles = StyleSheet.create({
   reminderText: {
     fontSize: 13,
     color: '#1e40af',
-    lineHeight: 18,
+  },
+  mobileHeader: {
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: '#2563eb',
+    marginBottom: 8,
+    borderRadius: 12,
+    marginHorizontal: -16,
+    marginTop: -16,
+    paddingTop: 60,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 4,
+    borderColor: '#fff',
+    marginBottom: 12,
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  email: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
+    marginBottom: 8,
+  },
+  subscriptionInfo: {
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  planName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1a1a1a',
+  },
+  featuresList: {
+    marginTop: 12,
+  },
+  featuresTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    marginBottom: 8,
+  },
+  featureItem: {
+    fontSize: 14,
+    color: '#16a34a',
+    marginVertical: 2,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  statBox: {
+    width: '47%',
+    backgroundColor: '#f5f5f5',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  mobileStatLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+  },
+  achievementsList: {
+    gap: 12,
+  },
+  achievementRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+  },
+  achievementRowLocked: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#fafafa',
+    borderRadius: 8,
+    opacity: 0.6,
+  },
+  achievementInfo: {
+    flex: 1,
+  },
+  mobileAchievementName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1a1a1a',
+  },
+  mobileAchievementNameLocked: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#999',
+  },
+  mobileAchievementDesc: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 2,
+  },
+  mobileAchievementDate: {
+    fontSize: 12,
+    color: '#999',
+  },
+  streakSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  streakMainMobile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  streakStats: {
+    alignItems: 'flex-end',
+  },
+  streakStatValue: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2563eb',
+  },
+  streakStatLabel: {
+    fontSize: 12,
+    color: '#666',
+  },
+  reminderInfoMobile: {
+    marginTop: 16,
+    padding: 12,
+    backgroundColor: '#fef3c7',
+    borderRadius: 8,
+  },
+  settingsListMobile: {
+    gap: 0,
+  },
+  settingsItemMobile: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  settingsActions: {
+    marginTop: 16,
+    gap: 12,
+  },
+  bottomSpacing: {
+    height: 100,
   },
 });
+    

@@ -10,3 +10,5 @@ export const platformSpecificStyles = {
   hasGPS: isMobile,
   canScanQR: isMobile,
 };
+
+export default { isWeb, isMobile, platformSpecificStyles };

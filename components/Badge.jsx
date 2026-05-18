@@ -1,11 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-interface BadgeProps {
-  text: string;
-  variant?: 'success' | 'warning' | 'info' | 'default';
-}
-
-export function Badge({ text, variant = 'default' }: BadgeProps) {
+export function Badge({ text, variant = 'default' }) {
   return (
     <View style={[styles.badge, styles[variant]]}>
       <Text style={[styles.text, styles[`text_${variant}`]]}>{text}</Text>

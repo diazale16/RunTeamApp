@@ -1,11 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-interface ProgressBarProps {
-  progress: number;
-  label?: string;
-}
-
-export function ProgressBar({ progress, label }: ProgressBarProps) {
+export function ProgressBar({ progress, label }) {
   const percentage = Math.min(Math.max(progress, 0), 100);
 
   return (
